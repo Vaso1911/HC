@@ -1,48 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="html" lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="This site is a bonus task GLO Academy">
+  <meta name="author" content="AzarWF">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@400;500&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="normalize.css">
   <link rel="stylesheet" href="style.css">
-  <script type="module" defer src="main.js"></script>
-  <title>Document</title>
+
+  <script defer src="main.js"></script>
+  <title>Bonus</title>
 </head>
 
-<body>
-  <div class="container-heroes" id="heroes-container"></div>
+<body class="body">
+  <div class="container">
+    <div class="wrapper">
+      <h1 class="title-site">This site is a bonus task GLO Academy</h1>
+      <label class="label-filter">
+        <span class="label-span">Choose a movie</span>
+        <select class="select-filter" id="movie-filter">
+          <option value="All">All movie</option>
+        </select>
+      </label>
 
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2 class="hero-card__name"></h2>
-      <ul class="list">
-        <li>
-          <span>Real Name:</span>
-          <span class="realName"></span>
-        </li>
-        <li>
-          <span>Species:</span>
-          <span class="species"></span>
-        </li>
-        <li>
-          <span>Status:</span>
-          <span class="status"></span>
-        </li>
-        <li>
-          <span>Movies:</span>
-          <ul class="list-movie movies"></ul>
-        </li>
-      </ul>
+    </div>
+
+    <div class="container-heroes" id="heroes-container"></div>
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 class="hero-card__name"></h2>
+        <ul class="modal-list list-reset">
+          <li class="modal-list__item">
+            <span>Real Name:</span>
+            <span class="realName"></span>
+          </li>
+          <li class="modal-list__item">
+            <span>Species:</span>
+            <span class="species"></span>
+          </li>
+          <li class="modal-list__item">
+            <span>Status:</span>
+            <span class="status"></span>
+          </li>
+          <li class="modal-list__item">
+            <span>Movies:</span>
+            <ul class="movies list-reset"></ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-  
 </body>
 
 </html>
-

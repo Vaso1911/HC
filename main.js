@@ -7,30 +7,56 @@ const acterNameModal =  modalContent.querySelector('.hero-card__name')
 const realNameModal = modalContent.querySelector('.realName')
 const speciesModal = modalContent.querySelector('.species')
 const statusModal = modalContent.querySelector('.status')
-
+const labelFilter = document.querySelector('.label-filter')
+const movieFilter = document.getElementById('movie-filter')
 let cards = '';
 
 const createHeroCard = (hero) => {
   cards += `
   <button class="hero-card" data-actor="${hero.actors}">
-    <picture><img src="${hero.photo}" alt="${hero.name}"></picture>
+    <picture class="hero-card__picture">
+      <img class="hero-card__img" src="${hero.photo}" alt="${hero.name}">
+    </picture>
     <h2 class="hero-card__name">${hero.name}</h2>
-    <ul class="list">
-      <li>
-        <h3>
-          <span>Acter:</span> ${hero.actors}
+    <ul class="list list-reset">
+      <li class="list__item">
+        <h3 class="hero-card__name hero-card__name--acter">
+          <span class="hero-card__acter ">Acter:</span> ${hero.actors}
         </h3>
       </li>
-        <li>
+        <li class="list__item list__item--style">
           <span>Citizenship:</span>
             <span>${hero.citizenship}</span>
         </li>
-        <li>
+        <li class="list__item list__item--style">
             <span>Gender:</span>
             <span>${hero.gender}</span>
         </li>
       </ul>
 </button>`;
+}
+
+const fillMovieFilter = (data) => {
+  const allMovies = new Set(); // Создаем множество для уникальных фильмов
+
+  data.forEach(heroData => {
+    if (heroData.movies) {
+      heroData.movies.forEach(movie => {
+        allMovies.add(movie); // Добавляем фильм в множество
+      });
+    }
+  });
+
+  // Преобразуем множество в массив и сортируем его
+  const sortedMovies = Array.from(allMovies).sort();
+
+  // Создаем опции для выпадающего списка
+  sortedMovies.forEach(movie => {
+    const option = document.createElement('option');
+    option.value = movie;
+    option.textContent = movie;
+    movieFilter.appendChild(option);
+  });
 }
 
 const openModal = (hero) => {
@@ -47,6 +73,7 @@ const openModal = (hero) => {
   if (hero.movies && hero.movies.length > 0) {
     hero.movies.forEach(movie => {
       const movieItem = document.createElement('li');
+      movieItem.classList.add('movies__item')
       movieItem.textContent = movie;
       moviesList.append(movieItem);
     });
@@ -79,6 +106,8 @@ const loadHeroes = async () => {
 
     heroesContainer.innerHTML = cards;
 
+
+    
     const heroCards = document.querySelectorAll('.hero-card');
     heroCards.forEach(heroCard => {
       heroCard.addEventListener('click', () => {
@@ -89,6 +118,59 @@ const loadHeroes = async () => {
         }
       });
     });
+
+    movieFilter.addEventListener('change', () => {
+      const selectedMovie = movieFilter.value; 
+      const heroCards = document.querySelectorAll('.hero-card');
+      heroCards.forEach(heroCard => {
+        const actor = heroCard.getAttribute('data-actor');
+        const selectedHero = data.find(hero => hero.actors === actor);
+    
+        if (selectedHero) {
+          if (selectedMovie === 'All' || (selectedHero.movies && selectedHero.movies.includes(selectedMovie))) {
+            heroCard.style.display = 'block'; // Показываем карточку, если фильм соответствует
+          } else {
+            heroCard.style.display = 'none'; // Скрываем карточку, если фильм не соответствует
+          }
+        }
+      });
+    });
+
+    fillMovieFilter(data)
+
+    const heroCardAnim = document.querySelectorAll('.hero-card');
+    let rAF = null;
+    
+    const animCardRotate = (ev) => {
+      cancelAnimationFrame(rAF);
+      const target = ev.currentTarget;
+      rAF = requestAnimationFrame(() => {
+    
+        const rotateY = (ev.offsetX - target.offsetWidth / 2) / 24;
+        const rotateX = ((ev.offsetY - target.offsetHeight / 2) / 24) * -1;
+    
+        target.style.transition = 'transform 0.1s ease-in-out';
+        target.style.transform = `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+      });
+    }
+    
+    const animCardDefault = (ev) => {
+      cancelAnimationFrame(rAF);
+      const target = ev.currentTarget;
+      rAF = requestAnimationFrame(() => {
+        target.style.transition = 'transform 0.1s ease-in-out';
+        target.style.transform = '';
+      });
+    }
+
+
+    heroCardAnim.forEach(e => {
+      if(e.classList.contains('hero-card')) {
+
+      e.addEventListener('mousemove', animCardRotate)
+      e.addEventListener('mouseout', animCardDefault)
+      }
+    })
 
   } catch (error) {
     console.error('Произошла ошибка при загрузке данных:', error);

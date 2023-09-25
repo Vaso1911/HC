@@ -37,20 +37,20 @@ const createHeroCard = (hero) => {
 }
 
 const fillMovieFilter = (data) => {
-  const allMovies = new Set(); // Создаем множество для уникальных фильмов
+  const allMovies = new Set(); 
 
   data.forEach(heroData => {
     if (heroData.movies) {
       heroData.movies.forEach(movie => {
-        allMovies.add(movie); // Добавляем фильм в множество
+        allMovies.add(movie); 
       });
     }
   });
 
-  // Преобразуем множество в массив и сортируем его
+
   const sortedMovies = Array.from(allMovies).sort();
 
-  // Создаем опции для выпадающего списка
+
   sortedMovies.forEach(movie => {
     const option = document.createElement('option');
     option.value = movie;
@@ -105,9 +105,7 @@ const loadHeroes = async () => {
     });
 
     heroesContainer.innerHTML = cards;
-
-
-    
+ 
     const heroCards = document.querySelectorAll('.hero-card');
     heroCards.forEach(heroCard => {
       heroCard.addEventListener('click', () => {
@@ -146,8 +144,8 @@ const loadHeroes = async () => {
       const target = ev.currentTarget;
       rAF = requestAnimationFrame(() => {
     
-        const rotateY = (ev.offsetX - target.offsetWidth / 2) / 24;
-        const rotateX = ((ev.offsetY - target.offsetHeight / 2) / 24) * -1;
+        const rotateY = (ev.offsetX - target.offsetWidth / 6) / 24;
+        const rotateX = ((ev.offsetY - target.offsetHeight / 6) / 24) * -1;
     
         target.style.transition = 'transform 0.1s ease-in-out';
         target.style.transform = `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;

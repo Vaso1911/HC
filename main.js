@@ -3,15 +3,22 @@ const heroesContainer = document.getElementById('heroes-container')
 const modal = document.getElementById('modal')
 const modalContent = modal.querySelector('.modal-content')
 const closeModal = modal.querySelector('.close')
-const acterNameModal =  modalContent.querySelector('.hero-card__name')
+const acterNameModal = modalContent.querySelector('.hero-card__name')
 const realNameModal = modalContent.querySelector('.realName')
 const speciesModal = modalContent.querySelector('.species')
 const statusModal = modalContent.querySelector('.status')
 const labelFilter = document.querySelector('.label-filter')
 const movieFilter = document.getElementById('movie-filter')
+const genderFilter = document.getElementById('gender-filter')
+const citizenshipFilter = document.getElementById('citizenship-filter')
 let cards = '';
 
 const createHeroCard = (hero) => {
+  if (hero.citizenship && typeof hero.citizenship === 'string') {
+    hero.citizenship = hero.citizenship.slice(0, 1).toUpperCase() + hero.citizenship.slice(1).toLowerCase();
+  } else {
+    hero.citizenship = 'N/A';
+  }
   cards += `
   <button class="hero-card" data-actor="${hero.actors}">
     <picture class="hero-card__picture">
@@ -21,7 +28,7 @@ const createHeroCard = (hero) => {
     <ul class="list list-reset">
       <li class="list__item">
         <h3 class="hero-card__name hero-card__name--acter">
-          <span class="hero-card__acter ">Acter:</span> ${hero.actors}
+          <span class="hero-card__acter ">Acter: </span> ${hero.actors}
         </h3>
       </li>
         <li class="list__item list__item--style">
@@ -30,19 +37,19 @@ const createHeroCard = (hero) => {
         </li>
         <li class="list__item list__item--style">
             <span>Gender:</span>
-            <span>${hero.gender}</span>
+            <span>${hero.gender.toLowerCase()}</span>
         </li>
       </ul>
 </button>`;
 }
 
 const fillMovieFilter = (data) => {
-  const allMovies = new Set(); 
+  const allMovies = new Set();
 
   data.forEach(heroData => {
     if (heroData.movies) {
       heroData.movies.forEach(movie => {
-        allMovies.add(movie); 
+        allMovies.add(movie);
       });
     }
   });
@@ -55,7 +62,53 @@ const fillMovieFilter = (data) => {
     const option = document.createElement('option');
     option.value = movie;
     option.textContent = movie;
-    movieFilter.appendChild(option);
+    movieFilter.append(option);
+  });
+}
+
+const fillGenderFilter = (data) => {
+  const genders = new Set();
+
+  data.forEach(heroData => {
+    if (heroData.gender) {
+      const genderLowercased = heroData.gender.toLowerCase()
+      genders.add(genderLowercased);
+    }
+  });
+
+  const sortedGender = Array.from(genders).sort();
+
+  sortedGender.forEach(gender => {
+
+    const option = document.createElement('option');
+    option.value = gender
+    option.textContent = gender
+    genderFilter.append(option);
+  });
+}
+
+const fillСitizenshipFilter = (data) => {
+  const citizenships = new Set();
+
+  data.forEach(heroData => {
+
+    if (heroData.citizenship) {
+      const citizenshipLowercased = heroData.citizenship.slice(0, 1).toUpperCase() + heroData.citizenship.slice(1).toLowerCase()
+      citizenships.add(citizenshipLowercased);
+    } else {
+      citizenships.add('Undefined');
+    }
+
+  });
+
+  const sortedCitizenship = Array.from(citizenships).sort();
+
+  sortedCitizenship.forEach(citizenship => {
+
+    const option = document.createElement('option');
+    option.value = citizenship
+    option.textContent = citizenship
+    citizenshipFilter.append(option);
   });
 }
 
@@ -67,7 +120,7 @@ const openModal = (hero) => {
   realNameModal.textContent = hero.realName || 'N/A';
   speciesModal.textContent = hero.species || 'N/A';
   statusModal.textContent = hero.status;
-  
+
   const moviesList = modalContent.querySelector('.movies');
   moviesList.innerHTML = '';
   if (hero.movies && hero.movies.length > 0) {
@@ -105,7 +158,7 @@ const loadHeroes = async () => {
     });
 
     heroesContainer.innerHTML = cards;
- 
+
     const heroCards = document.querySelectorAll('.hero-card');
     heroCards.forEach(heroCard => {
       heroCard.addEventListener('click', () => {
@@ -117,41 +170,61 @@ const loadHeroes = async () => {
       });
     });
 
-    movieFilter.addEventListener('change', () => {
-      const selectedMovie = movieFilter.value; 
+    const applyFilters = () => {
+      const selectedMovie = movieFilter.value;
+      const selectedGender = genderFilter.value.toLowerCase();
+      const selectedCitizenship = citizenshipFilter.value.toLowerCase();
       const heroCards = document.querySelectorAll('.hero-card');
+
       heroCards.forEach(heroCard => {
         const actor = heroCard.getAttribute('data-actor');
         const selectedHero = data.find(hero => hero.actors === actor);
-    
+
         if (selectedHero) {
-          if (selectedMovie === 'All' || (selectedHero.movies && selectedHero.movies.includes(selectedMovie))) {
-            heroCard.style.display = 'block'; // Показываем карточку, если фильм соответствует
+          const movieFilterPassed =
+            selectedMovie === 'All' || (selectedHero.movies && selectedHero.movies.includes(selectedMovie));
+
+          const genderFilterPassed =
+            selectedGender === 'genders' || (selectedHero.gender && selectedHero.gender.toLowerCase() === selectedGender);
+
+          const citizenshipFilterPassed =
+            selectedCitizenship === 'citizenships' ||
+            (selectedHero.citizenship &&
+              selectedHero.citizenship.toLowerCase() === selectedCitizenship);
+
+          if (movieFilterPassed && genderFilterPassed && citizenshipFilterPassed) {
+            heroCard.style.display = 'block';
           } else {
-            heroCard.style.display = 'none'; // Скрываем карточку, если фильм не соответствует
+            heroCard.style.display = 'none';
           }
         }
       });
-    });
+    };
+
+    movieFilter.addEventListener('change', applyFilters);
+    genderFilter.addEventListener('change', applyFilters);
+    citizenshipFilter.addEventListener('change', applyFilters);
 
     fillMovieFilter(data)
+    fillGenderFilter(data)
+    fillСitizenshipFilter(data)
 
     const heroCardAnim = document.querySelectorAll('.hero-card');
     let rAF = null;
-    
+
     const animCardRotate = (ev) => {
       cancelAnimationFrame(rAF);
       const target = ev.currentTarget;
       rAF = requestAnimationFrame(() => {
-    
+
         const rotateY = (ev.offsetX - target.offsetWidth / 6) / 24;
         const rotateX = ((ev.offsetY - target.offsetHeight / 6) / 24) * -1;
-    
+
         target.style.transition = 'transform 0.1s ease-in-out';
         target.style.transform = `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       });
     }
-    
+
     const animCardDefault = (ev) => {
       cancelAnimationFrame(rAF);
       const target = ev.currentTarget;
@@ -163,10 +236,10 @@ const loadHeroes = async () => {
 
 
     heroCardAnim.forEach(e => {
-      if(e.classList.contains('hero-card')) {
+      if (e.classList.contains('hero-card')) {
 
-      e.addEventListener('mousemove', animCardRotate)
-      e.addEventListener('mouseout', animCardDefault)
+        e.addEventListener('mousemove', animCardRotate)
+        e.addEventListener('mouseout', animCardDefault)
       }
     })
 

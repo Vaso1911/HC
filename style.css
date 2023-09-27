@@ -41,7 +41,7 @@
 
 .wrapper {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-bottom: 40px;
@@ -49,6 +49,8 @@
 }
 
 .title-site {
+  margin: 0;
+  margin-bottom: 40px;
   font-family: var(--header-font);
   font-size: 48px;
 }
@@ -57,9 +59,15 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 20px;
+  min-width: 600px;
   font-style: italic;
   font-size: 24px;
+}
+
+.label-filter:not(:last-child) {
+  margin-bottom: 20px;
 }
 
 .select-filter {
@@ -191,6 +199,9 @@
 }
 
 .list__item--style {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 18px;
 }
 
